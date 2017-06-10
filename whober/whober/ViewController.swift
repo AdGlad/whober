@@ -12,9 +12,6 @@ import AWSS3
 import AWSCognito
 import AWSLambda
 
-
-
-
 let credentialsProvider = AWSCognitoCredentialsProvider(regionType:.EUWest1, identityPoolId:"eu-west-1:b14e9e58-afca-44fe-a995-42b89826a1e3")
 let configuration = AWSServiceConfiguration(region:.EUWest1, credentialsProvider:credentialsProvider)
 let cognitoId = credentialsProvider.identityId
@@ -25,7 +22,6 @@ let cognitoId = credentialsProvider.identityId
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
   
     var imageURL = NSURL()
-
     var userId = 112
     var faceId = String()
     var matchStatus = String()
