@@ -16,13 +16,14 @@ let credentialsProvider = AWSCognitoCredentialsProvider(regionType:.EUWest1, ide
 let configuration = AWSServiceConfiguration(region:.EUWest1, credentialsProvider:credentialsProvider)
 let cognitoId = credentialsProvider.identityId
 
-    var requestId = String()
+
     var imageFileName = String()
 
+
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-  
+    var requestId = String()
     var imageURL = NSURL()
-    var userId = 112
+    var userId = 123
     var faceId = String()
     var matchStatus = String()
     var localPath : String = String()
@@ -67,7 +68,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.viewDidLoad()
     self.matchStatusLabel.text="Match Status"
     self.firstNameLabel.text="First Name"
-    self.surNameLabel.text="Sur Name"
+    self.surNameLabel.text="SurName"
 
         AWSServiceManager.default().defaultServiceConfiguration = configuration
         
@@ -89,6 +90,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         uploadRequest?.body = uploadingFileURL as URL
         
         transferManager.upload(uploadRequest!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
+            
+            
+
+            
+            
             if let error = task.error as? NSError {
                 if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: (error.code)) {
                     switch code {
@@ -129,13 +135,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let JSONDictionary = task.result as! NSDictionary
             let uploadOutput = task.result
             imageFileName = JSONDictionary["ImageFile"] as! String
-            requestId = JSONDictionary["RequestId"] as! String
+            self.requestId = JSONDictionary["RequestId"] as! String
             
             print("Result: \(uploadOutput!)")
             print("Result: \(String(describing: JSONDictionary))")
             print("Result: \(JSONDictionary["ImageFile"]!)")
             print("imageFileName: \(imageFileName)")
-            print("requestId: \(requestId)")
+            print("requestId: \(self.requestId)")
+            
+            let uploadToS3Status = self.uploadToS3Button()
+
+            
             return nil
         })
     }
@@ -161,11 +171,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
             let firstName = JSONDictionary["Firstname"] as! String
             let surName = JSONDictionary["SurName"] as! String
-            let requestStatus = JSONDictionary["Request_Status"] as! String
+            let RequestStatus = JSONDictionary["RequestStatus"] as! String
             
             print("firstName: \(firstName)")
             print("surName: \(surName)")
-            print("requestStatus: \(requestStatus)")
+            print("RequestStatus: \(RequestStatus)")
             
             DispatchQueue.main.async(execute: {
                 self.matchStatusLabel.text = "Matched"
@@ -236,12 +246,96 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             print("Result: \(String(describing: JSONDictionary))")
             print("Result: \(JSONDictionary["ImageFile"]!)")
             imageFileName = JSONDictionary["ImageFile"] as! String
-            requestId = JSONDictionary["RequestId"] as! String
+            self.requestId = JSONDictionary["RequestId"] as! String
             print("imageFileName: \(imageFileName)")
             return nil
         })
         
     }
+    
+    func uploadToS3Button() -> String
+    {
+        let transferManager = AWSS3TransferManager.default()
+        
+        let uploadingFileURL = URL(fileURLWithPath: localPath)
+        
+        print ("uploadingFileURL \(uploadingFileURL)")
+        let uploadRequest = AWSS3TransferManagerUploadRequest()
+        
+        uploadRequest?.bucket = "swiftarycelebritytemp"
+        uploadRequest?.key = imageFileName
+        uploadRequest?.body = uploadingFileURL as URL
+        
+        transferManager.upload(uploadRequest!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
+            
+                        let fetchDetailsStatus  = self.fetchDetails()
+            
+            if let error = task.error as? NSError {
+                if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: (error.code)) {
+                    switch code {
+                    case .cancelled, .paused:
+                        break
+                    default:
+                        print("Error uploading: \(uploadRequest?.key) Error: \(error)")
+                    }
+                }
+                else {
+                    print("Error uploading: \(uploadRequest?.key) Error: \(error)")
+                }
+                return nil
+            }
+            
+            let uploadOutput = task.result
+            print("Upload complete for: \(uploadRequest?.key)")
+            return nil
+        })
+    return "Success"
+    }
+    
+    
+    func fetchDetails() -> String {
+        // Dispose of any resources that can be recreated.
+        
+        
+        print ("userId \(userId)")
+        print ("requestId \(requestId)")
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        let jsonObject: [String: Any] = ["UserId" :  userId,"RequestId" : requestId]
+        
+        lambdaInvoker.invokeFunction("FetchRequestDetails_SWLD", jsonObject: jsonObject).continueWith(block: { (task:AWSTask) -> AnyObject? in
+            if let error = task.error {
+                print("\(error)")
+                return nil
+            }
+            // Handle response in task.result
+            let JSONDictionary = task.result as! NSDictionary
+            let uploadOutput = task.result
+            print("Result: \(uploadOutput!)")
+            
+            let firstName = JSONDictionary["Firstname"] as! String
+            let surName = JSONDictionary["SurName"] as! String
+            let RequestStatus = JSONDictionary["RequestStatus"] as! String
+            
+            print("firstName: \(firstName)")
+            print("surName: \(surName)")
+            print("RequestStatus: \(RequestStatus)")
+            
+            DispatchQueue.main.async(execute: {
+                self.matchStatusLabel.text = "Matched"
+                self.firstNameLabel.text = "\(firstName)"
+                self.surNameLabel.text = "\(surName)"
+                
+            })
+            
+            self.surNameLabel.text=surName
+            
+            
+            return nil
+        })
+            return "Success"
+    }
+
 
 }
 
