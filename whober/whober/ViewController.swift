@@ -29,27 +29,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var localPath : String = String()
     var uploadFileURL = NSURL()
     
-    
+    @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var ImageView: UIImageView!
-    
     @IBOutlet weak var matchStatusLabel: UILabel!
-    
     @IBOutlet weak var firstNameLabel: UILabel!
-    
     @IBOutlet weak var surNameLabel: UILabel!
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        
-        
         let fileManager = FileManager.default
          localPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("whober.jpg")
         
         print("localPath \(localPath)")
         let imageData = UIImageJPEGRepresentation(image, 0.5)
         fileManager.createFile(atPath: localPath as String, contents: imageData, attributes: nil)
-        
         let imagePAth = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("whober.jpg")
         
                 print("imagePAth \(imagePAth)")
@@ -71,54 +65,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     self.surNameLabel.text="SurName"
 
         AWSServiceManager.default().defaultServiceConfiguration = configuration
-        
-    
+
                 
     }
 
     
-    @IBAction func uploadToS3Button(_ sender: Any) {
-        let transferManager = AWSS3TransferManager.default()
-        
-        let uploadingFileURL = URL(fileURLWithPath: localPath)
-        
-        print ("uploadingFileURL \(uploadingFileURL)")
-        let uploadRequest = AWSS3TransferManagerUploadRequest()
-        
-        uploadRequest?.bucket = "swiftarycelebritytemp"
-        uploadRequest?.key = imageFileName
-        uploadRequest?.body = uploadingFileURL as URL
-        
-        transferManager.upload(uploadRequest!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
-            
-            
-
-            
-            
-            if let error = task.error as? NSError {
-                if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: (error.code)) {
-                    switch code {
-                    case .cancelled, .paused:
-                        break
-                    default:
-                        print("Error uploading: \(uploadRequest?.key) Error: \(error)")
-                    }
-                }
-                else {
-                    print("Error uploading: \(uploadRequest?.key) Error: \(error)")
-                }
-                return nil
-            }
-            
-            let uploadOutput = task.result
-            print("Upload complete for: \(uploadRequest?.key)")
-            return nil
-        })
-        
-        
-    }
     
     @IBAction func recogniseButton(_ sender: Any) {
+        
+        self.activityIndicatorView.startAnimating()
+        
         // Dispose of any resources that can be recreated.
         let lambdaInvoker = AWSLambdaInvoker.default()
         let jsonObject: [String: Any] = ["UserId" :  userId]
@@ -154,50 +110,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.didReceiveMemoryWarning()
     }
     
-    @IBAction func fetchDetailsButton(_ sender: UIButton) {
-        // Dispose of any resources that can be recreated.
-        let lambdaInvoker = AWSLambdaInvoker.default()
-        let jsonObject: [String: Any] = ["UserId" :  userId,"RequestId" : requestId]
-        
-        lambdaInvoker.invokeFunction("FetchRequestDetails_SWLD", jsonObject: jsonObject).continueWith(block: { (task:AWSTask) -> AnyObject? in
-            if let error = task.error {
-                print("\(error)")
-                return nil
-            }
-            // Handle response in task.result
-            let JSONDictionary = task.result as! NSDictionary
-            let uploadOutput = task.result
-            print("Result: \(uploadOutput!)")
-
-            let firstName = JSONDictionary["Firstname"] as! String
-            let surName = JSONDictionary["SurName"] as! String
-            let RequestStatus = JSONDictionary["RequestStatus"] as! String
-            
-            print("firstName: \(firstName)")
-            print("surName: \(surName)")
-            print("RequestStatus: \(RequestStatus)")
-            
-            DispatchQueue.main.async(execute: {
-                self.matchStatusLabel.text = "Matched"
-                self.firstNameLabel.text = "\(firstName)"
-                self.surNameLabel.text = "\(surName)"
-                
-            })
-            
-            self.surNameLabel.text=surName
-            
-            
-            return nil
-        })
-        
-    }
+  
     
     @IBAction func chooseImages(_ sender: UIButton) {
         
     let imagePickerController = UIImagePickerController()
-        
     imagePickerController.delegate = self
-        
     let actionSheet = UIAlertController(title: "Photo Source", message: "Choose A Source", preferredStyle: .actionSheet)
         
         actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: {(action:UIAlertAction) in
@@ -213,61 +131,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }))
         
         actionSheet.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: {(action:UIAlertAction) in
-            
             imagePickerController.sourceType = .photoLibrary
-            
             self.present(imagePickerController, animated: true, completion: nil)
             
         }))
         
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
         self.present(actionSheet, animated: true, completion: nil)
-        
-        
-        
-        
     }
 
-    @IBAction func UpdateRequestButton(_ sender: UIButton) {
-        // Dispose of any resources that can be recreated.
-        let lambdaInvoker = AWSLambdaInvoker.default()
-        let jsonObject: [String: Any] = ["UserId" :  userId,"RequestId" : requestId,"FaceId"    :    "", "Status"    :    "ImageUploaded"]
-        
-        lambdaInvoker.invokeFunction("UpdateRequest_SWLD", jsonObject: jsonObject).continueWith(block: { (task:AWSTask) -> AnyObject? in
-            if let error = task.error {
-                print("\(error)")
-                return nil
-            }
-            // Handle response in task.result
-            let JSONDictionary = task.result as! NSDictionary
-            let uploadOutput = task.result
-            print("Result: \(uploadOutput!)")
-            print("Result: \(String(describing: JSONDictionary))")
-            print("Result: \(JSONDictionary["ImageFile"]!)")
-            imageFileName = JSONDictionary["ImageFile"] as! String
-            self.requestId = JSONDictionary["RequestId"] as! String
-            print("imageFileName: \(imageFileName)")
-            return nil
-        })
-        
-    }
     
     func uploadToS3Button() -> String
     {
         let transferManager = AWSS3TransferManager.default()
-        
         let uploadingFileURL = URL(fileURLWithPath: localPath)
-        
         print ("uploadingFileURL \(uploadingFileURL)")
         let uploadRequest = AWSS3TransferManagerUploadRequest()
-        
         uploadRequest?.bucket = "swiftarycelebritytemp"
         uploadRequest?.key = imageFileName
         uploadRequest?.body = uploadingFileURL as URL
         
         transferManager.upload(uploadRequest!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
-            
                         let fetchDetailsStatus  = self.fetchDetails()
             
             if let error = task.error as? NSError {
@@ -296,13 +180,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func fetchDetails() -> String {
         // Dispose of any resources that can be recreated.
         
-        
         print ("userId \(userId)")
         print ("requestId \(requestId)")
-        
         let lambdaInvoker = AWSLambdaInvoker.default()
         let jsonObject: [String: Any] = ["UserId" :  userId,"RequestId" : requestId]
-        
         lambdaInvoker.invokeFunction("FetchRequestDetails_SWLD", jsonObject: jsonObject).continueWith(block: { (task:AWSTask) -> AnyObject? in
             if let error = task.error {
                 print("\(error)")
@@ -326,16 +207,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 self.firstNameLabel.text = "\(firstName)"
                 self.surNameLabel.text = "\(surName)"
                 
+                self.activityIndicatorView.stopAnimating()
+                self.activityIndicatorView.hidesWhenStopped = true
+                
             })
-            
-            self.surNameLabel.text=surName
-            
-            
             return nil
         })
             return "Success"
     }
-
-
 }
 
