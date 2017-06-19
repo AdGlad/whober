@@ -28,6 +28,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var matchStatus = String()
     var localPath : String = String()
     var uploadFileURL = NSURL()
+    var tempBucketName = "swiftarycelebritytemp"
     
     @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var ImageView: UIImageView!
@@ -42,7 +43,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
          localPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("whober.jpg")
         
         print("localPath \(localPath)")
-        let imageData = UIImageJPEGRepresentation(image, 0.5)
+        let imageData = UIImageJPEGRepresentation(image, 0.1)
         fileManager.createFile(atPath: localPath as String, contents: imageData, attributes: nil)
         let imagePAth = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("whober.jpg")
         
@@ -147,14 +148,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let uploadingFileURL = URL(fileURLWithPath: localPath)
         print ("uploadingFileURL \(uploadingFileURL)")
         let uploadRequest = AWSS3TransferManagerUploadRequest()
-        uploadRequest?.bucket = "swiftarycelebritytemp"
+        uploadRequest?.bucket = tempBucketName
         uploadRequest?.key = imageFileName
         uploadRequest?.body = uploadingFileURL as URL
         
         transferManager.upload(uploadRequest!).continueWith(executor: AWSExecutor.mainThread(), block: { (task:AWSTask<AnyObject>) -> Any? in
-                        let fetchDetailsStatus  = self.fetchDetails()
+         //   let fetchDetailsStatus  = self.fetchDetails()
+            let MatchFaceStatus  = self.MatchFace()
             
-            if let error = task.error as? NSError {
+            if let error = task.error as NSError? {
                 if error.domain == AWSS3TransferManagerErrorDomain, let code = AWSS3TransferManagerErrorType(rawValue: (error.code)) {
                     switch code {
                     case .cancelled, .paused:
@@ -174,6 +176,61 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             return nil
         })
     return "Success"
+    }
+    
+    func MatchFace() -> String {
+        // Dispose of any resources that can be recreated.
+        
+        print ("userId \(userId)")
+        print ("requestId \(requestId)")
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        let jsonObject: [String: Any] = ["UserId" :  userId,"RequestId" : requestId, "Bucket" : tempBucketName, "ImageFile" : imageFileName]
+        
+        lambdaInvoker.invokeFunction("MatchFace_SWLD", jsonObject: jsonObject).continueWith(block: { (task:AWSTask) -> AnyObject? in
+            if let error = task.error {
+                print("\(error)")
+                return nil
+            }
+            // Handle response in task.result
+            let JSONDictionary = task.result as! NSDictionary
+            let uploadOutput = task.result
+            print("Result: \(uploadOutput!)")
+            
+            
+            //'UserId'          : lv_UserId,
+            //'RequestId'       : lv_RequestId,
+            //'FaceId'          : lv_FaceId,
+            //'EndDateTime'     : lv_DateTime,
+            //'ExternalImageId' : lv_ExternalImageId ,
+            //'FirstName'       : lv_FirstName      ,
+            //'SurName'         : lv_SurName         ,
+            //'MatchedFaceUrl'  : lv_MatchedFaceUrl ,
+            //'Status'          : lv_Status,
+            //'RequestStatus'   : lv_RequestStatus
+            
+            
+            let firstName = JSONDictionary["FirstName"] as! String
+            let surName = JSONDictionary["SurName"] as! String
+            
+            let RequestStatus = JSONDictionary["RequestStatus"] as! String
+            
+            print("firstName: \(firstName)")
+            print("surName: \(surName)")
+            print("RequestStatus: \(RequestStatus)")
+    
+            
+            DispatchQueue.main.async(execute: {
+                self.matchStatusLabel.text = "Matched"
+                self.firstNameLabel.text = "\(firstName)"
+                self.surNameLabel.text = "\(surName)"
+                
+                self.activityIndicatorView.stopAnimating()
+                self.activityIndicatorView.hidesWhenStopped = true
+                
+            })
+            return nil
+        })
+        return "Success"
     }
     
     
@@ -201,6 +258,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             print("firstName: \(firstName)")
             print("surName: \(surName)")
             print("RequestStatus: \(RequestStatus)")
+            
+            
             
             DispatchQueue.main.async(execute: {
                 self.matchStatusLabel.text = "Matched"

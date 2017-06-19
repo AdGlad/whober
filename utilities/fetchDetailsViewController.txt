@@ -1,0 +1,41 @@
+ 
+    func fetchDetails() -> String {
+        // Dispose of any resources that can be recreated.
+        
+        print ("userId \(userId)")
+        print ("requestId \(requestId)")
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        let jsonObject: [String: Any] = ["UserId" :  userId,"RequestId" : requestId]
+        lambdaInvoker.invokeFunction("FetchRequestDetails_SWLD", jsonObject: jsonObject).continueWith(block: { (task:AWSTask) -> AnyObject? in
+            if let error = task.error {
+                print("\(error)")
+                return nil
+            }
+            // Handle response in task.result
+            let JSONDictionary = task.result as! NSDictionary
+            let uploadOutput = task.result
+            print("Result: \(uploadOutput!)")
+            
+            let firstName = JSONDictionary["Firstname"] as! String
+            let surName = JSONDictionary["SurName"] as! String
+            let RequestStatus = JSONDictionary["RequestStatus"] as! String
+            
+            print("firstName: \(firstName)")
+            print("surName: \(surName)")
+            print("RequestStatus: \(RequestStatus)")
+            
+            
+            
+            DispatchQueue.main.async(execute: {
+                self.matchStatusLabel.text = "Matched"
+                self.firstNameLabel.text = "\(firstName)"
+                self.surNameLabel.text = "\(surName)"
+                
+                self.activityIndicatorView.stopAnimating()
+                self.activityIndicatorView.hidesWhenStopped = true
+                
+            })
+            return nil
+        })
+            return "Success"
+    }
