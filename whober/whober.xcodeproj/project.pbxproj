@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6609BEA11EF7AA3D009C61C0 /* matchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6609BEA01EF7AA3D009C61C0 /* matchRequest.swift */; };
+		6609BEA31EF7B038009C61C0 /* matchRequestTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6609BEA21EF7B038009C61C0 /* matchRequestTableViewCell.swift */; };
+		6609BEA91EF7C2A4009C61C0 /* matchRequestTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6609BEA81EF7C2A4009C61C0 /* matchRequestTableViewController.swift */; };
 		66AA4C1D1EED00C300F89498 /* face_recognition copy.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 66AA4C1C1EED00C300F89498 /* face_recognition copy.jpg */; };
 		66FA21DF1EE6BAE3007B508E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA21DE1EE6BAE3007B508E /* AppDelegate.swift */; };
 		66FA21E11EE6BAE3007B508E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA21E01EE6BAE3007B508E /* ViewController.swift */; };
@@ -109,6 +112,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6609BEA01EF7AA3D009C61C0 /* matchRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = matchRequest.swift; sourceTree = "<group>"; };
+		6609BEA21EF7B038009C61C0 /* matchRequestTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = matchRequestTableViewCell.swift; sourceTree = "<group>"; };
+		6609BEA81EF7C2A4009C61C0 /* matchRequestTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = matchRequestTableViewController.swift; path = ../matchRequestTableViewController.swift; sourceTree = "<group>"; };
 		66AA4C1C1EED00C300F89498 /* face_recognition copy.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "face_recognition copy.jpg"; sourceTree = "<group>"; };
 		66FA21DB1EE6BAE3007B508E /* whober.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = whober.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66FA21DE1EE6BAE3007B508E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -228,9 +234,11 @@
 		66FA21DD1EE6BAE3007B508E /* whober */ = {
 			isa = PBXGroup;
 			children = (
+				6609BEA81EF7C2A4009C61C0 /* matchRequestTableViewController.swift */,
 				66FA21DE1EE6BAE3007B508E /* AppDelegate.swift */,
 				66FA21E01EE6BAE3007B508E /* ViewController.swift */,
 				66FA21E21EE6BAE3007B508E /* Main.storyboard */,
+				6609BEA21EF7B038009C61C0 /* matchRequestTableViewCell.swift */,
 				66FA21E51EE6BAE3007B508E /* Assets.xcassets */,
 				66AA4C1C1EED00C300F89498 /* face_recognition copy.jpg */,
 				66FA22441EE7F808007B508E /* leonardo_dicaprio.jpg */,
@@ -238,6 +246,7 @@
 				66FA21E71EE6BAE3007B508E /* LaunchScreen.storyboard */,
 				66FA21EA1EE6BAE3007B508E /* Info.plist */,
 				66FA21F41EE6BB4C007B508E /* AWSCognitoAuth.framework */,
+				6609BEA01EF7AA3D009C61C0 /* matchRequest.swift */,
 			);
 			path = whober;
 			sourceTree = "<group>";
@@ -338,6 +347,9 @@
 			files = (
 				66FA21E11EE6BAE3007B508E /* ViewController.swift in Sources */,
 				66FA21DF1EE6BAE3007B508E /* AppDelegate.swift in Sources */,
+				6609BEA11EF7AA3D009C61C0 /* matchRequest.swift in Sources */,
+				6609BEA91EF7C2A4009C61C0 /* matchRequestTableViewController.swift in Sources */,
+				6609BEA31EF7B038009C61C0 /* matchRequestTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
