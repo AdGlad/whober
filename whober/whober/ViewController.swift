@@ -39,6 +39,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
+
+    
     
     
     var request: matchRequest?
@@ -285,6 +287,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         })
             return "Success"
     }
+    
+    @IBAction func cancelButton(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     
     //MARK: Navigation
     

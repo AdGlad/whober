@@ -198,7 +198,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="New Match Request" id="2eN-MP-Mce">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="EdD-ka-MFP"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="EdD-ka-MFP">
+                            <connections>
+                                <action selector="cancelButton:" destination="BYZ-38-t0r" id="n3a-cG-uK6"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="R33-h8-By5">
                             <connections>
                                 <segue destination="TGI-rX-w65" kind="unwind" unwindAction="unwindToMatchRequestListWithSender:" id="KJ7-Fs-acs"/>
