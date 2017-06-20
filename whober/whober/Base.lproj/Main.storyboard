@@ -199,17 +199,23 @@
                     </view>
                     <navigationItem key="navigationItem" title="New Match Request" id="2eN-MP-Mce">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="EdD-ka-MFP"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="R33-h8-By5"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="R33-h8-By5">
+                            <connections>
+                                <segue destination="TGI-rX-w65" kind="unwind" unwindAction="unwindToMatchRequestListWithSender:" id="KJ7-Fs-acs"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="ImageView" destination="tqP-gD-BfU" id="wRO-Px-RvC"/>
                         <outlet property="activityIndicatorView" destination="Wjy-jQ-ddK" id="L2J-wB-mcH"/>
                         <outlet property="firstNameLabel" destination="HFJ-JE-5KO" id="H0E-yD-8YF"/>
                         <outlet property="matchStatusLabel" destination="BdM-vj-dUK" id="5fh-1z-Xet"/>
+                        <outlet property="saveButton" destination="R33-h8-By5" id="rjm-aL-3TG"/>
                         <outlet property="surNameLabel" destination="JRP-24-NLL" id="LnB-G3-EFi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <exit id="TGI-rX-w65" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1972" y="120.98950524737631"/>
         </scene>

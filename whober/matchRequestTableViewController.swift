@@ -131,4 +131,20 @@ class matchRequestTableViewController: UITableViewController {
         matchRequests += [matchRequest1,matchRequest2,matchRequest3,matchRequest4]
     }
     
+    //MARK: Actions
+    
+    @IBAction func unwindToMatchRequestList(sender: UIStoryboardSegue) {
+        
+        if let sourceViewController = sender.source as? ViewController, let request = sourceViewController.request {
+            
+            let newIndexPath = IndexPath(row: matchRequests.count, section: 0)
+            
+            matchRequests.append(request)
+            
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+            
+            
+        }
+        
+    }
 }

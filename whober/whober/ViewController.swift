@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os.log
 import AWSCore
 import AWSS3
 import AWSCognito
@@ -35,6 +36,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var matchStatusLabel: UILabel!
     @IBOutlet weak var firstNameLabel: UILabel!
     @IBOutlet weak var surNameLabel: UILabel!
+    
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    
+    
+    
+    var request: matchRequest?
+    
+    
+    
+    
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
@@ -274,5 +285,30 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         })
             return "Success"
     }
+    
+    //MARK: Navigation
+    
+    
+    // This method lets you configure a view controller before it's presented.
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    
+        super.prepare(for: segue, sender: sender)
+        // Configure the destination view controller only when the save button is pressed.
+        guard let button = sender as? UIBarButtonItem, button === saveButton else {
+            os_log("The save button was not pressed, cancelling", log: OSLog.default, type: .debug)
+            return
+        }
+        
+        let matchstatus = matchStatusLabel.text ?? ""
+        let firstName   = firstNameLabel.text ?? ""
+        let surname     = surNameLabel.text ?? ""
+        let photo       = ImageView.image
+        
+        request = matchRequest(userId: "123", requestId: requestId, photo: photo, matchStatus: matchstatus, firstName: firstName, surname: surname)
+        
+        
+    }
+    
 }
 
