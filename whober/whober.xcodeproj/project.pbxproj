@@ -478,6 +478,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = whober/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swiftary.whober;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -495,6 +496,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = whober/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.swiftary.whober;
 				PRODUCT_NAME = "$(TARGET_NAME)";

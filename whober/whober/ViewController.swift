@@ -51,14 +51,20 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
+         let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let dateTimeString = formatter.string(from: Date())
+        print("dateTimeString \(dateTimeString)")
+        
+        
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         let fileManager = FileManager.default
-         localPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("whober.jpg")
+         localPath = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(dateTimeString)
         
         print("localPath \(localPath)")
         let imageData = UIImageJPEGRepresentation(image, 0.1)
         fileManager.createFile(atPath: localPath as String, contents: imageData, attributes: nil)
-        let imagePAth = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent("whober.jpg")
+        let imagePAth = (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString).appendingPathComponent(dateTimeString)
         
                 print("imagePAth \(imagePAth)")
         
