@@ -14,6 +14,8 @@ import AWSCognito
 import AWSLambda
 
 let credentialsProvider = AWSCognitoCredentialsProvider(regionType:.EUWest1, identityPoolId:"eu-west-1:b14e9e58-afca-44fe-a995-42b89826a1e3")
+//let credentialsProvider = AWSCognitoCredentialsProvider(regionType:.EUWest1, identityPoolId:"eu-west-1:05fe7046-0612-4fb9-87e6-a3b7e680d157")
+
 let configuration = AWSServiceConfiguration(region:.EUWest1, credentialsProvider:credentialsProvider)
 let cognitoId = credentialsProvider.identityId
 
@@ -239,7 +241,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
             
             DispatchQueue.main.async(execute: {
-                self.matchStatusLabel.text = "Matched"
+                //  self.matchStatusLabel.text = "Matched"
+                self.matchStatusLabel.text = "\(RequestStatus)"
                 self.firstNameLabel.text = "\(firstName)"
                 self.surNameLabel.text = "\(surName)"
                 
